@@ -4,6 +4,7 @@ Resources:
   lambdarolemyoutbound:
     Type: 'AWS::IAM::Role'
     Properties:
+      RoleName: "lambda-role-myoutbound"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -16,10 +17,15 @@ Resources:
       Path: /
       ManagedPolicyArns:
         - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      Tags:
+        - Key: "env"
+          Value: "dev"
+        - Key: "resource-owner"
+          Value: "cj"
   RolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: 'mylambdapolicys3'
+      PolicyName: 'lambda-policy-myoutbound-s3'
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -32,5 +38,4 @@ Resources:
             Resource: "arn:aws:s3:::myoutbound"
       Roles:
         - !Ref lambdarolemyoutbound
-
           

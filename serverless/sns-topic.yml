@@ -1,0 +1,10 @@
+OutboundNotificationTopic:
+  Type: AWS::SNS::Topic
+  Properties:
+    Subscription:
+    - Lambda: ""
+    Tags:
+      - Key: "env"
+        Value: "dev"
+      - Key: "resource-owner"
+        Value: "cj"

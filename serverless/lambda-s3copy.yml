@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: 'dev'
+  RoleArn:
+    Type: String
+  EventSourceArn:
+    Type: String
+    Default: "arn:aws:s3:::myoutbound"
+Resources:
+  LambdaOutboundCopy:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: nodejs12.x
+      Role: !Ref RoleArn    
+      FunctionName: 'dev-myoutbound'
+      Handler: index.handler
+      Code:
+        ZipFile: !Sub |
+          exports.handler = async function(event, context) {
+            console.log('Event received: \n')
+            return context.logStreamName;
+          }
+      Tags:
+        - Key: "env"
+          Value: !Ref EnvironmentName
+        - Key: "resource-owner"
+          Value: "cj"
+  LambdaTrigger:
+    Type: Custom::LambdaTrigger
+    Properties:
+      FunctionName: !Ref LambdaOutboundCopy
+      BucketName: !Ref LambdaOutboundCopy
