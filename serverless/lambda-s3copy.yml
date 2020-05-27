@@ -5,21 +5,29 @@ Parameters:
     Default: 'dev'
   RoleArn:
     Type: String
-  EventSourceArn:
+  SourceBucket: 
     Type: String
-    Default: "arn:aws:s3:::myoutbound"
+  TargetBucket:
+    Type: String
 Resources:
   LambdaOutboundCopy:
     Type: AWS::Lambda::Function
     Properties:
       Runtime: nodejs12.x
-      Role: !Ref RoleArn    
+      Role: !Ref RoleArn
       FunctionName: 'dev-myoutbound'
       Handler: index.handler
+      Environment:
+        Variables:
+          SrcBucket:
+            Ref: SourceBucket
+          DestBucket:
+            Ref: TargetBucket      
       Code:
         ZipFile: !Sub |
           exports.handler = async function(event, context) {
             console.log('Event received: \n')
+            //console.log('Environment variable. TargetBucket: ' + process.env.DestBucket)
             return context.logStreamName;
           }
       Tags:
@@ -31,4 +39,4 @@ Resources:
     Type: Custom::LambdaTrigger
     Properties:
       FunctionName: !Ref LambdaOutboundCopy
-      BucketName: !Ref LambdaOutboundCopy
+      BucketName: !Ref SourceBucket
